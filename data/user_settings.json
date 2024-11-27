@@ -1,0 +1,4 @@
+{
+  "user_currencies": ["USD", "CNY","EUR","TRY"],
+  "user_stocks": ["SADL", "AMZN", "REUN", "MSFT", "TSLA", "AMEX", "IBACU"]
+}
