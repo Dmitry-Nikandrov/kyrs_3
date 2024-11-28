@@ -1,24 +1,24 @@
 import pandas as pd
 import os,requests,json, certifi
-from datetime import  datetime
+from datetime import  datetime,timedelta
 from urllib.request import urlopen
 from pandas.core.interchange.dataframe_protocol import DataFrame
 
 
 def get_excel (filename):
-    '''считывает данные из внешнего файла Excel и возвращает их в формате DataFrame'''
+    '''считывает данные из внешнего файла Excel и возвращает их в формате DataFrame за период с начала месяца до заданной даты в формате YYYY-MM-DD HH:MM:SS'''
     path = os.path.join('../data/',filename)
     excel_data = pd.read_excel(path)
     excel_df = pd.DataFrame(excel_data)
+    excel_df['datetime'] = pd.to_datetime(excel_df['Дата операции'])
     return excel_df
 
-json_data = get_excel('operations.xlsx')
+
 
 def top_5_operations(df:DataFrame)->DataFrame:
     '''возвращает 5 самых крупных операции по столбцу "Сумма операции"'''
     list_data =[]
     df_sorted=df.sort_values(by = 'Сумма платежа',ascending=False,inplace=False).iloc[0:5, :]
-    #df_top_5 = df_sorted.to_dict(orient='records')
     for _,row in df_sorted.iterrows():
         dic = {}
         dic['date'] = row['Дата операции']
@@ -44,16 +44,16 @@ def common_information(df: DataFrame) -> list:
     return list_data
 #print(common_information(df))
 
-def greetings(str):
+def greetings():
     '''возвращает привествие пользователю в зависимости от текущего времени суток'''
-    date_obj = datetime.strptime(str,'%Y-%m-%d %H:%M:%S')
-    if date_obj.hour in [0,10]:
+    date_obj = datetime.now()
+    if 6< date_obj.hour <= 10:
         return "Доброе утро!"
-    elif 10< date_obj.hour <= 16:
+    elif 11< date_obj.hour <= 16:
         return "Доброго дня!"
-    elif 16< date_obj.hour <= 10:
+    elif 16< date_obj.hour <= 21:
         return "Доброго вечера!"
-    elif 16< date_obj.hour <= 24:
+    elif 21< date_obj.hour <= 6:
         return "Доброй ночи!"
 
 def get_exchange_rate(curr_list: list)->list:
@@ -92,11 +92,14 @@ def get_stock_price (json_file)->list:
     return total_list
 #print(get_stock_price(json_file='user_settings.json')
 
-def main():
-    agg_dict = {'greetings':greetings('2022-12-10 15:45:11'),
+def main(str_time):
+    data = get_excel('operations.xlsx')
+    date_obj = datetime.strptime(str_time, '%Y-%m-%d %H:%M:%S')
+    json_data = data[(data['datetime'] >= (date_obj - timedelta(days=date_obj.day - 1))) & (data['datetime'] <= date_obj)]
+    agg_dict = {'greetings':greetings(),
     'cards':common_information(json_data),
     'top_transactions':top_5_operations(json_data),
     'currency_rates':get_stock_price('user_settings.json'),
     'stock_prices':get_stock_price('user_settings.json')}
-    return agg_dict
-print(main())
+    return json.dumps(agg_dict,ensure_ascii=False)
+print(main('2020-08-20 17:55:16'))
