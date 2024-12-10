@@ -1,9 +1,10 @@
-import json, certifi
+import json
 import logging
 import os
 from datetime import datetime
 from urllib.request import urlopen
 
+import certifi
 import pandas as pd
 import requests
 from dotenv import load_dotenv

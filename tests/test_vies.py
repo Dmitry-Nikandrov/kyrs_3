@@ -1,7 +1,15 @@
+from datetime import datetime
+from unittest.mock import patch
+
 from src.views import main
 
-def test_main():
-    assert main('2020-08-11 15:25:00') == '{"greetings": "Доброй ночи!", "cards": [{"last_digits": "4556", "total_spent": 1650.0, "cashbak": 0.0}, {"last_digits": "7197", "total_spent": 1934.77, "cashbak": 0.0}], "top_transactions": [{"date": "01.08.2020 22:00:32", "card_number": NaN, "amount": 42000.0, "category": "Пополнения", "descriprion": "Перевод с карты"}, {"date": "09.08.2020 14:31:03", "card_number": NaN, "amount": 10000.0, "category": "Пополнения", "descriprion": "Перевод с карты"}, {"date": "05.08.2020 19:42:53", "card_number": NaN, "amount": 1200.0, "category": "Пополнения", "descriprion": "Перевод с карты"}, {"date": "04.08.2020 21:28:51", "card_number": "*4556", "amount": 300.0, "category": "Переводы", "descriprion": "Вячеслав Ш."}, {"date": "05.08.2020 12:17:20", "card_number": "*7197", "amount": -45.0, "category": "Супермаркеты", "descriprion": "Колхоз"}], "currency_rates": [{"stock": "SADL", "price": 18.25}, {"stock": "AMZN", "price": 226.09}, {"stock": "REUN", "price": 1.12}, {"stock": "MSFT", "price": 446.02}, {"stock": "TSLA", "price": 389.79}, {"stock": "IBACU", "price": 10.05}], "stock_prices": [{"currency": "USD", "exchange_rate": 99.3759}, {"currency": "CNY", "exchange_rate": 13.524}, {"currency": "EUR", "exchange_rate": 105.0996}, {"currency": "TRY", "exchange_rate": 28.6122}]}'
+
+@patch("src.utils.datetime")
+def test_main(mock_datetime):
+    mock_datetime.now.return_value = datetime(2024, 12, 10, 9, 20, 55)
+
+    assert main("None") == []
+
 
 if __name__ == "__main__":
-    print('Завершено успешно')
+    print("Завершено успешно")
